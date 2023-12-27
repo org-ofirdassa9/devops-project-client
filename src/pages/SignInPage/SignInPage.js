@@ -20,19 +20,24 @@ const defaultTheme = createTheme();
 
 export default function SignIn() {
   const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [isLoading, setIsLoading] = useState(false); // State for loading indicator
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsLoading(true); // Set loading to true during sign-in process
+
     const data = new FormData(event.currentTarget);
     const email = data.get('email');
     const password = data.get('password');
 
     try {
       await signIn(email, password);
-      navigate('/'); // Redirect to home page
+      navigate('/');
     } catch (error) {
       setErrorMessage(error.response?.data?.detail || 'Sign in failed. Please try again.');
+    } finally {
+      setIsLoading(false); // Reset loading state regardless of success or failure
     }
   };
 
@@ -84,6 +89,8 @@ export default function SignIn() {
             >
               Sign In
             </Button>
+            {/* Loader */}
+            {isLoading && <div className="loader">Loading...</div>} 
             {errorMessage && <Typography color="error">{errorMessage}</Typography>}
             <Grid container>
               <Grid item>

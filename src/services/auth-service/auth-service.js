@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getUserProfile } from '../user-service/user-service';
 
-const API_URL = 'http://localhost:8000/api/v1/auth'; // Adjust with your API URL
+const API_URL = 'http://localhost:8000/api/users_service/auth'; // Adjust with your API URL
 
 
 // In auth-service.js
@@ -49,6 +49,7 @@ export const signIn = async (email, password) => {
 export const signOut = async () => {
     await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
     localStorage.removeItem('access_token'); // Clear the access token from local storage
+    sessionStorage.removeItem('userProfile'); // Clear the user profile from session storage
     window.location.href = '/'; // Navigate to the home page after signing out
 };
 
@@ -61,7 +62,7 @@ export const isAuthenticated = async () => {
 
     try {
         // Include the access token in the Authorization header
-        await axios.get(`http://localhost:8000/api/v1/user/me`, { 
+        await axios.get(`http://localhost:8000/api/users_service/user/me`, { 
             withCredentials: true,
             headers: {
                 'Authorization': `Bearer ${accessToken}`
