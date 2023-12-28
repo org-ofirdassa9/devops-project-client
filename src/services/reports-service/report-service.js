@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../api/api';
 
 const API_URL_USERS = 'http://localhost:8002/api/report_generator/reports';
 
@@ -9,7 +9,7 @@ export const getComparisonReport = async (userId) => {
     }
 
     try {
-        const response = await axios.get(`${API_URL_USERS}/${userId}`, {
+        const response = await api.get(`${API_URL_USERS}/${userId}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
@@ -40,7 +40,7 @@ export const getOverviewReport = async (userId) => {
     }
 
     try {
-        const response = await axios.get(`${API_URL_USERS}/overview/${userId}`, {
+        const response = await api.get(`${API_URL_USERS}/overview/${userId}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
@@ -71,7 +71,7 @@ export const getTrendReport = async (userId) => {
     }
 
     try {
-        const response = await axios.get(`${API_URL_USERS}/trend_analysis/${userId}`, {
+        const response = await api.get(`${API_URL_USERS}/trend_analysis/${userId}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },

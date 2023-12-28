@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../api/api';
 
 const API_URL_USERS = 'http://localhost:8000/api/users_service/user';
 const API_URL_METRICS = 'http://localhost:8001/api/metrics_process/metrics';
@@ -8,8 +8,7 @@ export const getUserProfile = async () => {
     if (!accessToken) {
         throw new Error('Access token not found');
     }
-
-    const response = await axios.get(`${API_URL_USERS}/me`, {
+    const response = await api.get(`${API_URL_USERS}/me`, {
         withCredentials: true,
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -26,7 +25,7 @@ export const updateUserProfile = async (userId, updatedData) => {
 
     // Ensure specific fields are integers
     try {
-        await axios.put(`${API_URL_USERS}/${userId}`, updatedData, {
+        await api.put(`${API_URL_USERS}/${userId}`, updatedData, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }
@@ -45,7 +44,7 @@ export const updateUserMetrics = async (userId, updatedData) => {
 
     // Ensure specific fields are integers
     try {
-        await axios.put(`${API_URL_METRICS}/${userId}`, updatedData, {
+        await api.put(`${API_URL_METRICS}/${userId}`, updatedData, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }

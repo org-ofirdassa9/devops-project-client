@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { getUserProfile } from '../user-service/user-service';
+import api from '../api/api';
 
 const API_URL = 'http://localhost:8000/api/users_service/auth'; // Adjust with your API URL
 
@@ -7,7 +7,7 @@ const API_URL = 'http://localhost:8000/api/users_service/auth'; // Adjust with y
 // In auth-service.js
 export const signUp = async (firstName, lastName, email, password) => {
     try {
-        await axios.post(`${API_URL}/signup`, {
+        await api.post(`${API_URL}/signup`, {
             first_name: firstName,
             last_name: lastName,
             email: email,
@@ -26,9 +26,11 @@ export const signUp = async (firstName, lastName, email, password) => {
 
 
 export const signIn = async (email, password) => {
-    const response = await axios.post(`${API_URL}/login`, {
+    const response = await api.post(`${API_URL}/login`, {
         email,
         password
+    },{
+        withCredentials: true,
     });
     
     // Assuming the access token is in the response body
@@ -47,7 +49,7 @@ export const signIn = async (email, password) => {
 };
 
 export const signOut = async () => {
-    await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
+    await api.post(`${API_URL}/logout`, {}, { withCredentials: true });
     localStorage.removeItem('access_token'); // Clear the access token from local storage
     sessionStorage.removeItem('userProfile'); // Clear the user profile from session storage
     window.location.href = '/'; // Navigate to the home page after signing out
@@ -62,7 +64,7 @@ export const isAuthenticated = async () => {
 
     try {
         // Include the access token in the Authorization header
-        await axios.get(`http://localhost:8000/api/users_service/user/me`, { 
+        await api.get(`http://localhost:8000/api/users_service/user/me`, { 
             withCredentials: true,
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -78,7 +80,7 @@ export const refreshToken = async () => {
     // This endpoint is called to get a new access token using the refresh token
     // Assuming your FastAPI backend handles the refresh token automatically since it's in an HTTP-only cookie
     try {
-        const response = await axios.post(`${API_URL}/refresh`, {}, { withCredentials: true });
+        const response = await api.post(`${API_URL}/refresh`, {}, { withCredentials: true });
 
         // Update the access token in local storage
         if (response.data.access_token) {
