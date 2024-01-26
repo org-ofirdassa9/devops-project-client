@@ -1,9 +1,10 @@
-name: ci
+name: build-push
 
 on:
   push:
     branches:
       - 'master'
+      - 'stage'
 
 jobs:
   build-push:
@@ -50,11 +51,19 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ env.ECR_REPO_NAME }}
           IMAGE_TAG: ${{github.run_number}}
+
         run: |
-          docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" .
-          docker tag "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" "$ECR_REGISTRY/$ECR_REPOSITORY:latest"
-          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:latest"
-          echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
-          echo "image_tag=$IMAGE_TAG" 
-          echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          if [[ "$GITHUB_REF" == "refs/heads/stage" ]]; then
+            # For stage branch, set image tag as 0.$IMAGE_TAG
+            docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:0.$IMAGE_TAG" .
+            docker push "$ECR_REGISTRY/$ECR_REPOSITORY:0.$IMAGE_TAG"
+          elif [[ "$GITHUB_REF" == "refs/heads/master" ]]; then
+            # For master branch, set image tag as 1.$IMAGE_TAG
+            docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:1.$IMAGE_TAG" .
+            docker tag "$ECR_REGISTRY/$ECR_REPOSITORY:1.$IMAGE_TAG" "$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+            docker push "$ECR_REGISTRY/$ECR_REPOSITORY:1.$IMAGE_TAG"
+            docker push "$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+          else
+            echo "Skipping image build for branch $GITHUB_REF"
+            exit 0
+          fi
