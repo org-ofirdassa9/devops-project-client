@@ -1,13 +1,12 @@
 import { getUserProfile } from '../user-service/user-service';
 import api from '../api/api';
 
-const API_URL = 'http://localhost:8000/api/users_service/auth'; // Adjust with your API URL
-
+const USERS_SERVICE_API_URL = process.env.REACT_APP_USERS_SERVICE_API_URL || "/api/users_service";  // http://localhost:8000/api/users_service
 
 // In auth-service.js
 export const signUp = async (firstName, lastName, email, password) => {
     try {
-        await api.post(`${API_URL}/signup`, {
+        await api.post(`${USERS_SERVICE_API_URL}/auth/signup`, {
             first_name: firstName,
             last_name: lastName,
             email: email,
@@ -26,7 +25,7 @@ export const signUp = async (firstName, lastName, email, password) => {
 
 
 export const signIn = async (email, password) => {
-    const response = await api.post(`${API_URL}/login`, {
+    const response = await api.post(`${USERS_SERVICE_API_URL}/auth/login`, {
         email,
         password
     },{
@@ -49,7 +48,7 @@ export const signIn = async (email, password) => {
 };
 
 export const signOut = async () => {
-    await api.post(`${API_URL}/logout`, {}, { withCredentials: true });
+    await api.post(`${USERS_SERVICE_API_URL}/auth/logout`, {}, { withCredentials: true });
     localStorage.removeItem('access_token'); // Clear the access token from local storage
     sessionStorage.removeItem('userProfile'); // Clear the user profile from session storage
     window.location.href = '/'; // Navigate to the home page after signing out
@@ -64,7 +63,7 @@ export const isAuthenticated = async () => {
 
     try {
         // Include the access token in the Authorization header
-        await api.get(`http://localhost:8000/api/users_service/user/me`, { 
+        await api.get(`${USERS_SERVICE_API_URL}/user/me`, { 
             withCredentials: true,
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -80,7 +79,7 @@ export const refreshToken = async () => {
     // This endpoint is called to get a new access token using the refresh token
     // Assuming your FastAPI backend handles the refresh token automatically since it's in an HTTP-only cookie
     try {
-        const response = await api.post(`${API_URL}/refresh`, {}, { withCredentials: true });
+        const response = await api.post(`${USERS_SERVICE_API_URL}/auth/refresh`, {}, { withCredentials: true });
 
         // Update the access token in local storage
         if (response.data.access_token) {

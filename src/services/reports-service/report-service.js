@@ -1,6 +1,6 @@
 import api from '../api/api';
 
-const API_URL_USERS = 'http://localhost:8002/api/report_generator/reports';
+const REPORT_GENERATOR_API_URL = process.env.REACT_APP_REPORT_GENERATOR_API_URL || "/api/report_generator/reports"; // http://localhost:8002/api/report_generator/reports
 
 export const getComparisonReport = async (userId) => {
     const accessToken = localStorage.getItem('access_token');
@@ -9,7 +9,7 @@ export const getComparisonReport = async (userId) => {
     }
 
     try {
-        const response = await api.get(`${API_URL_USERS}/${userId}`, {
+        const response = await api.get(`${REPORT_GENERATOR_API_URL}/${userId}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
@@ -40,7 +40,7 @@ export const getOverviewReport = async (userId) => {
     }
 
     try {
-        const response = await api.get(`${API_URL_USERS}/overview/${userId}`, {
+        const response = await api.get(`${REPORT_GENERATOR_API_URL}/overview/${userId}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
@@ -71,7 +71,7 @@ export const getTrendReport = async (userId) => {
     }
 
     try {
-        const response = await api.get(`${API_URL_USERS}/trend_analysis/${userId}`, {
+        const response = await api.get(`${REPORT_GENERATOR_API_URL}/trend_analysis/${userId}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },

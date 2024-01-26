@@ -1,19 +1,19 @@
-FROM node:18 as builder
-
-WORKDIR /usr/src
-
-COPY . .
-
-RUN npm install
-
-RUN npm run build
-
-FROM node:18
+FROM node:18 as build
 
 WORKDIR /usr/src/app
 
-COPY --from=builder /usr/src/build .
+COPY package.json .
 
-RUN npm install -g serve
+RUN npm install
 
-CMD [ "serve", "-sn" ]
+COPY . .
+
+RUN npm run build
+
+FROM nginx:alpine
+
+EXPOSE 80
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=build /usr/src/app/build /usr/share/nginx/html
